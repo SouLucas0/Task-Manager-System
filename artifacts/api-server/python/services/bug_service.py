@@ -1,9 +1,11 @@
+import threading
 from typing import Optional, List
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from models.bug import Bug
 from repositories.bug import BugRepository
 from schemas.bug import BugInputSchema, BugUpdateSchema, BugSummarySchema
+from email_service import send_bug_report_email
 
 
 class BugService:
@@ -43,7 +45,15 @@ class BugService:
             user_id=user_id,
         )
         saved = self._repo.save(bug)
-        return saved.to_dict()
+        bug_dict = saved.to_dict()
+
+        threading.Thread(
+            target=send_bug_report_email,
+            args=(bug_dict,),
+            daemon=True,
+        ).start()
+
+        return bug_dict
 
     def update_bug(self, bug_id: int, data: BugUpdateSchema, user_id: int) -> dict:
         bug = self._repo.find_by_id(bug_id)
