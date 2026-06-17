@@ -1,36 +1,53 @@
-# [Project name]
+# TaskFlow — Gerenciador de Tarefas
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+Sistema web de gerenciamento de tarefas implementado com conceitos de POO em Python no backend e React no frontend.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
-- `pnpm run typecheck` — full typecheck across all packages
-- `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
+- `cd /home/runner/workspace/artifacts/api-server/python && uvicorn main:app --host 0.0.0.0 --port 8080 --reload` — API Python
+- `pnpm --filter @workspace/task-manager run dev` — frontend React
+- `pnpm run typecheck` — typecheck completo
+- `pnpm --filter @workspace/api-spec run codegen` — regenerar hooks e schemas Zod
+- `python artifacts/api-server/python/seed.py` — popular banco com dados iniciais
 - Required env: `DATABASE_URL` — Postgres connection string
 
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
-- API: Express 5
-- DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
-- API codegen: Orval (from OpenAPI spec)
-- Build: esbuild (CJS bundle)
+- **Backend: Python + FastAPI + SQLAlchemy (OOP)**
+- DB: PostgreSQL (via psycopg2-binary + SQLAlchemy)
+- Frontend: React + Vite + TanStack Query
+- API codegen: Orval (do spec OpenAPI)
+- UI: shadcn/ui + Tailwind CSS
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `lib/api-spec/openapi.yaml` — contrato OpenAPI (fonte da verdade)
+- `artifacts/api-server/python/` — backend Python
+  - `models/` — SQLAlchemy ORM (BaseEntity, Task, Category)
+  - `repositories/` — padrão Repository (BaseRepository abstrata)
+  - `services/` — lógica de negócio (TaskService, CategoryService)
+  - `schemas/` — validação Pydantic
+  - `routes/` — rotas FastAPI
+  - `main.py` — app FastAPI com tabelas criadas no startup
+- `artifacts/task-manager/src/` — frontend React
+- `lib/api-client-react/src/generated/` — hooks React Query gerados
+- `lib/api-zod/src/generated/` — schemas Zod gerados
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- **Backend em Python puro**: substituiu o servidor Node.js para demonstrar POO com FastAPI e SQLAlchemy.
+- **Padrão Repository**: `BaseRepository` (ABC genérico) → `TaskRepository` e `CategoryRepository` herdam CRUD e acrescentam queries específicas.
+- **Camada de serviço**: `TaskService` e `CategoryService` encapsulam regras de negócio e delegam ao repositório.
+- **`BaseEntity` compartilhada**: `id`, `created_at`, `updated_at` e `_to_dict()` protegido numa classe base que todos os models herdam.
+- **OpenAPI-first**: spec em YAML gera hooks TypeScript e schemas Zod via Orval, mantendo frontend e backend em sincronia.
 
-## Product
+## Conceitos de POO demonstrados
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- **Herança**: `BaseEntity → Task, Category`; `BaseRepository → TaskRepository, CategoryRepository`
+- **Encapsulamento**: `_to_dict()` protegido nos models; repositório como dependência privada nos services
+- **Abstração**: `BaseRepository` é uma ABC com método `exists()` abstrato
+- **Polimorfismo**: `find_all()` sobrescrito em `TaskRepository` com filtragem adicional
 
 ## User preferences
 
@@ -38,8 +55,6 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
-
-## Pointers
-
-- See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details
+- O servidor Python roda de `artifacts/api-server/python/` — o `cd` para esse diretório é necessário pois os imports são relativos.
+- Após mudar o schema, rodar `python seed.py` com o banco limpo para repopular.
+- Não usar `--app-dir` do uvicorn — usar `cd` com caminho absoluto no run command.
