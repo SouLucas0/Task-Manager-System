@@ -225,3 +225,130 @@ export const DeleteCategoryParams = zod.object({
 })
 
 
+/**
+ * @summary Get bug summary stats
+ */
+export const GetBugsSummaryResponse = zod.object({
+  "total": zod.number(),
+  "by_status": zod.object({
+  "open": zod.number(),
+  "in_progress": zod.number(),
+  "resolved": zod.number(),
+  "closed": zod.number()
+}),
+  "by_priority": zod.object({
+  "low": zod.number(),
+  "medium": zod.number(),
+  "high": zod.number(),
+  "critical": zod.number()
+})
+})
+
+
+/**
+ * @summary List all bugs
+ */
+export const ListBugsQueryParams = zod.object({
+  "status": zod.enum(['open', 'in_progress', 'resolved', 'closed']).optional(),
+  "priority": zod.enum(['low', 'medium', 'high', 'critical']).optional()
+})
+
+export const ListBugsResponseItem = zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "description": zod.string().nullish(),
+  "status": zod.enum(['open', 'in_progress', 'resolved', 'closed']),
+  "priority": zod.enum(['low', 'medium', 'high', 'critical']),
+  "steps_to_reproduce": zod.string().nullish(),
+  "environment": zod.string().nullish(),
+  "version": zod.string().nullish(),
+  "user_id": zod.number().nullish(),
+  "created_at": zod.string(),
+  "updated_at": zod.string()
+})
+export const ListBugsResponse = zod.array(ListBugsResponseItem)
+
+
+/**
+ * @summary Report a bug
+ */
+
+export const createBugBodyStatusDefault = `open`;
+export const createBugBodyPriorityDefault = `medium`;
+
+export const CreateBugBody = zod.object({
+  "title": zod.string().min(1),
+  "description": zod.string().optional(),
+  "status": zod.enum(['open', 'in_progress', 'resolved', 'closed']).default(createBugBodyStatusDefault),
+  "priority": zod.enum(['low', 'medium', 'high', 'critical']).default(createBugBodyPriorityDefault),
+  "steps_to_reproduce": zod.string().optional(),
+  "environment": zod.string().optional(),
+  "version": zod.string().optional()
+})
+
+
+/**
+ * @summary Get a bug by ID
+ */
+export const GetBugParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const GetBugResponse = zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "description": zod.string().nullish(),
+  "status": zod.enum(['open', 'in_progress', 'resolved', 'closed']),
+  "priority": zod.enum(['low', 'medium', 'high', 'critical']),
+  "steps_to_reproduce": zod.string().nullish(),
+  "environment": zod.string().nullish(),
+  "version": zod.string().nullish(),
+  "user_id": zod.number().nullish(),
+  "created_at": zod.string(),
+  "updated_at": zod.string()
+})
+
+
+/**
+ * @summary Update a bug
+ */
+export const UpdateBugParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+
+
+export const UpdateBugBody = zod.object({
+  "title": zod.string().min(1).optional(),
+  "description": zod.string().nullish(),
+  "status": zod.enum(['open', 'in_progress', 'resolved', 'closed']).optional(),
+  "priority": zod.enum(['low', 'medium', 'high', 'critical']).optional(),
+  "steps_to_reproduce": zod.string().nullish(),
+  "environment": zod.string().nullish(),
+  "version": zod.string().nullish()
+})
+
+export const UpdateBugResponse = zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "description": zod.string().nullish(),
+  "status": zod.enum(['open', 'in_progress', 'resolved', 'closed']),
+  "priority": zod.enum(['low', 'medium', 'high', 'critical']),
+  "steps_to_reproduce": zod.string().nullish(),
+  "environment": zod.string().nullish(),
+  "version": zod.string().nullish(),
+  "user_id": zod.number().nullish(),
+  "created_at": zod.string(),
+  "updated_at": zod.string()
+})
+
+
+/**
+ * @summary Delete a bug
+ */
+export const DeleteBugParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+

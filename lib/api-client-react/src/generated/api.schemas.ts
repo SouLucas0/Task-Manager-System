@@ -166,6 +166,131 @@ export interface CategoryInput {
   color?: string;
 }
 
+export type BugStatus = typeof BugStatus[keyof typeof BugStatus];
+
+
+export const BugStatus = {
+  open: 'open',
+  in_progress: 'in_progress',
+  resolved: 'resolved',
+  closed: 'closed',
+} as const;
+
+export type BugPriority = typeof BugPriority[keyof typeof BugPriority];
+
+
+export const BugPriority = {
+  low: 'low',
+  medium: 'medium',
+  high: 'high',
+  critical: 'critical',
+} as const;
+
+export interface Bug {
+  id: number;
+  title: string;
+  /** @nullable */
+  description?: string | null;
+  status: BugStatus;
+  priority: BugPriority;
+  /** @nullable */
+  steps_to_reproduce?: string | null;
+  /** @nullable */
+  environment?: string | null;
+  /** @nullable */
+  version?: string | null;
+  /** @nullable */
+  user_id?: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export type BugInputStatus = typeof BugInputStatus[keyof typeof BugInputStatus];
+
+
+export const BugInputStatus = {
+  open: 'open',
+  in_progress: 'in_progress',
+  resolved: 'resolved',
+  closed: 'closed',
+} as const;
+
+export type BugInputPriority = typeof BugInputPriority[keyof typeof BugInputPriority];
+
+
+export const BugInputPriority = {
+  low: 'low',
+  medium: 'medium',
+  high: 'high',
+  critical: 'critical',
+} as const;
+
+export interface BugInput {
+  /** @minLength 1 */
+  title: string;
+  description?: string;
+  status?: BugInputStatus;
+  priority?: BugInputPriority;
+  steps_to_reproduce?: string;
+  environment?: string;
+  version?: string;
+}
+
+export type BugUpdateStatus = typeof BugUpdateStatus[keyof typeof BugUpdateStatus];
+
+
+export const BugUpdateStatus = {
+  open: 'open',
+  in_progress: 'in_progress',
+  resolved: 'resolved',
+  closed: 'closed',
+} as const;
+
+export type BugUpdatePriority = typeof BugUpdatePriority[keyof typeof BugUpdatePriority];
+
+
+export const BugUpdatePriority = {
+  low: 'low',
+  medium: 'medium',
+  high: 'high',
+  critical: 'critical',
+} as const;
+
+export interface BugUpdate {
+  /** @minLength 1 */
+  title?: string;
+  /** @nullable */
+  description?: string | null;
+  status?: BugUpdateStatus;
+  priority?: BugUpdatePriority;
+  /** @nullable */
+  steps_to_reproduce?: string | null;
+  /** @nullable */
+  environment?: string | null;
+  /** @nullable */
+  version?: string | null;
+}
+
+export type BugSummaryByStatus = {
+  open: number;
+  in_progress: number;
+  resolved: number;
+  closed: number;
+};
+
+export type BugSummaryByPriority = {
+  low: number;
+  medium: number;
+  high: number;
+  critical: number;
+};
+
+export interface BugSummary {
+  total: number;
+  by_status: BugSummaryByStatus;
+  by_priority: BugSummaryByPriority;
+}
+
 export type ListTasksParams = {
 status?: ListTasksStatus;
 priority?: ListTasksPriority;
@@ -191,5 +316,30 @@ export const ListTasksPriority = {
   low: 'low',
   medium: 'medium',
   high: 'high',
+} as const;
+
+export type ListBugsParams = {
+status?: ListBugsStatus;
+priority?: ListBugsPriority;
+};
+
+export type ListBugsStatus = typeof ListBugsStatus[keyof typeof ListBugsStatus];
+
+
+export const ListBugsStatus = {
+  open: 'open',
+  in_progress: 'in_progress',
+  resolved: 'resolved',
+  closed: 'closed',
+} as const;
+
+export type ListBugsPriority = typeof ListBugsPriority[keyof typeof ListBugsPriority];
+
+
+export const ListBugsPriority = {
+  low: 'low',
+  medium: 'medium',
+  high: 'high',
+  critical: 'critical',
 } as const;
 

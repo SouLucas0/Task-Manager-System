@@ -23,6 +23,7 @@ class User(BaseEntity):
 
     tasks: Mapped[list["Task"]] = relationship("Task", back_populates="user", lazy="dynamic")
     categories: Mapped[list["Category"]] = relationship("Category", back_populates="user", lazy="dynamic")
+    bugs: Mapped[list["Bug"]] = relationship("Bug", back_populates="user", lazy="dynamic")
 
     def to_dict(self) -> dict:
         data = self._to_dict()

@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import Dashboard from "@/pages/Dashboard";
 import Tasks from "@/pages/Tasks";
 import Categories from "@/pages/Categories";
+import Bugs from "@/pages/Bugs";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import NotFound from "@/pages/not-found";
@@ -41,6 +42,7 @@ function Router() {
             <Route path="/" component={Dashboard} />
             <Route path="/tasks" component={Tasks} />
             <Route path="/categories" component={Categories} />
+            <Route path="/bugs" component={Bugs} />
             <Route component={NotFound} />
           </Switch>
         </AppLayout>

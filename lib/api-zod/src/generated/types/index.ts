@@ -7,9 +7,24 @@
  */
 
 export * from './authResponse';
+export * from './bug';
+export * from './bugInput';
+export * from './bugInputPriority';
+export * from './bugInputStatus';
+export * from './bugPriority';
+export * from './bugStatus';
+export * from './bugSummary';
+export * from './bugSummaryByPriority';
+export * from './bugSummaryByStatus';
+export * from './bugUpdate';
+export * from './bugUpdatePriority';
+export * from './bugUpdateStatus';
 export * from './category';
 export * from './categoryInput';
 export * from './healthStatus';
+export * from './listBugsParams';
+export * from './listBugsPriority';
+export * from './listBugsStatus';
 export * from './listTasksParams';
 export * from './listTasksPriority';
 export * from './listTasksStatus';

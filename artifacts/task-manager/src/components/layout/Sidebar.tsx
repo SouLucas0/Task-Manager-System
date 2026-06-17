@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { LayoutDashboard, CheckSquare, Tags, LogOut, User } from "lucide-react";
+import { LayoutDashboard, CheckSquare, Tags, Bug, LogOut, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useGetTasksSummary } from "@workspace/api-client-react";
 import { getGetTasksSummaryQueryKey } from "@workspace/api-client-react";
@@ -38,6 +38,11 @@ export function Sidebar() {
       href: "/categories",
       label: "Categorias",
       icon: Tags,
+    },
+    {
+      href: "/bugs",
+      label: "Bugs",
+      icon: Bug,
     },
   ];
 

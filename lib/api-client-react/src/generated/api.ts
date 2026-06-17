@@ -21,9 +21,14 @@ import type {
 
 import type {
   AuthResponse,
+  Bug,
+  BugInput,
+  BugSummary,
+  BugUpdate,
   Category,
   CategoryInput,
   HealthStatus,
+  ListBugsParams,
   ListTasksParams,
   LoginInput,
   RegisterInput,
@@ -1010,5 +1015,456 @@ export const useDeleteCategory = <TError = ErrorType<void>,
         TContext
       > => {
       return useMutation(getDeleteCategoryMutationOptions(options));
+    }
+
+export const getGetBugsSummaryUrl = () => {
+
+
+
+
+  return `/api/bugs/summary`
+}
+
+/**
+ * @summary Get bug summary stats
+ */
+export const getBugsSummary = async ( options?: RequestInit): Promise<BugSummary> => {
+
+  return customFetch<BugSummary>(getGetBugsSummaryUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetBugsSummaryQueryKey = () => {
+    return [
+    `/api/bugs/summary`
+    ] as const;
+    }
+
+
+export const getGetBugsSummaryQueryOptions = <TData = Awaited<ReturnType<typeof getBugsSummary>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getBugsSummary>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetBugsSummaryQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getBugsSummary>>> = ({ signal }) => getBugsSummary({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getBugsSummary>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetBugsSummaryQueryResult = NonNullable<Awaited<ReturnType<typeof getBugsSummary>>>
+export type GetBugsSummaryQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get bug summary stats
+ */
+
+export function useGetBugsSummary<TData = Awaited<ReturnType<typeof getBugsSummary>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getBugsSummary>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetBugsSummaryQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getListBugsUrl = (params?: ListBugsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/bugs?${stringifiedParams}` : `/api/bugs`
+}
+
+/**
+ * @summary List all bugs
+ */
+export const listBugs = async (params?: ListBugsParams, options?: RequestInit): Promise<Bug[]> => {
+
+  return customFetch<Bug[]>(getListBugsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListBugsQueryKey = (params?: ListBugsParams,) => {
+    return [
+    `/api/bugs`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListBugsQueryOptions = <TData = Awaited<ReturnType<typeof listBugs>>, TError = ErrorType<unknown>>(params?: ListBugsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listBugs>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListBugsQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listBugs>>> = ({ signal }) => listBugs(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listBugs>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListBugsQueryResult = NonNullable<Awaited<ReturnType<typeof listBugs>>>
+export type ListBugsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List all bugs
+ */
+
+export function useListBugs<TData = Awaited<ReturnType<typeof listBugs>>, TError = ErrorType<unknown>>(
+ params?: ListBugsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listBugs>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListBugsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getCreateBugUrl = () => {
+
+
+
+
+  return `/api/bugs`
+}
+
+/**
+ * @summary Report a bug
+ */
+export const createBug = async (bugInput: BugInput, options?: RequestInit): Promise<Bug> => {
+
+  return customFetch<Bug>(getCreateBugUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      bugInput,)
+  }
+);}
+
+
+
+
+export const getCreateBugMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createBug>>, TError,{data: BodyType<BugInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createBug>>, TError,{data: BodyType<BugInput>}, TContext> => {
+
+const mutationKey = ['createBug'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createBug>>, {data: BodyType<BugInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createBug(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateBugMutationResult = NonNullable<Awaited<ReturnType<typeof createBug>>>
+    export type CreateBugMutationBody = BodyType<BugInput>
+    export type CreateBugMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Report a bug
+ */
+export const useCreateBug = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createBug>>, TError,{data: BodyType<BugInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createBug>>,
+        TError,
+        {data: BodyType<BugInput>},
+        TContext
+      > => {
+      return useMutation(getCreateBugMutationOptions(options));
+    }
+
+export const getGetBugUrl = (id: number,) => {
+
+
+
+
+  return `/api/bugs/${id}`
+}
+
+/**
+ * @summary Get a bug by ID
+ */
+export const getBug = async (id: number, options?: RequestInit): Promise<Bug> => {
+
+  return customFetch<Bug>(getGetBugUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetBugQueryKey = (id: number,) => {
+    return [
+    `/api/bugs/${id}`
+    ] as const;
+    }
+
+
+export const getGetBugQueryOptions = <TData = Awaited<ReturnType<typeof getBug>>, TError = ErrorType<void>>(id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getBug>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetBugQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getBug>>> = ({ signal }) => getBug(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getBug>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetBugQueryResult = NonNullable<Awaited<ReturnType<typeof getBug>>>
+export type GetBugQueryError = ErrorType<void>
+
+
+/**
+ * @summary Get a bug by ID
+ */
+
+export function useGetBug<TData = Awaited<ReturnType<typeof getBug>>, TError = ErrorType<void>>(
+ id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getBug>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetBugQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getUpdateBugUrl = (id: number,) => {
+
+
+
+
+  return `/api/bugs/${id}`
+}
+
+/**
+ * @summary Update a bug
+ */
+export const updateBug = async (id: number,
+    bugUpdate: BugUpdate, options?: RequestInit): Promise<Bug> => {
+
+  return customFetch<Bug>(getUpdateBugUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      bugUpdate,)
+  }
+);}
+
+
+
+
+export const getUpdateBugMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateBug>>, TError,{id: number;data: BodyType<BugUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateBug>>, TError,{id: number;data: BodyType<BugUpdate>}, TContext> => {
+
+const mutationKey = ['updateBug'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateBug>>, {id: number;data: BodyType<BugUpdate>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateBug(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateBugMutationResult = NonNullable<Awaited<ReturnType<typeof updateBug>>>
+    export type UpdateBugMutationBody = BodyType<BugUpdate>
+    export type UpdateBugMutationError = ErrorType<void>
+
+    /**
+ * @summary Update a bug
+ */
+export const useUpdateBug = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateBug>>, TError,{id: number;data: BodyType<BugUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateBug>>,
+        TError,
+        {id: number;data: BodyType<BugUpdate>},
+        TContext
+      > => {
+      return useMutation(getUpdateBugMutationOptions(options));
+    }
+
+export const getDeleteBugUrl = (id: number,) => {
+
+
+
+
+  return `/api/bugs/${id}`
+}
+
+/**
+ * @summary Delete a bug
+ */
+export const deleteBug = async (id: number, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getDeleteBugUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+export const getDeleteBugMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteBug>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteBug>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['deleteBug'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteBug>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteBug(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteBugMutationResult = NonNullable<Awaited<ReturnType<typeof deleteBug>>>
+
+    export type DeleteBugMutationError = ErrorType<void>
+
+    /**
+ * @summary Delete a bug
+ */
+export const useDeleteBug = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteBug>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteBug>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getDeleteBugMutationOptions(options));
     }
 
