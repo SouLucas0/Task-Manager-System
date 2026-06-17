@@ -18,6 +18,57 @@ export const HealthCheckResponse = zod.object({
 
 
 /**
+ * @summary Register a new user
+ */
+
+export const registerBodyPasswordMin = 6;
+
+
+
+export const RegisterBody = zod.object({
+  "name": zod.string().min(1),
+  "email": zod.string().email(),
+  "password": zod.string().min(registerBodyPasswordMin)
+})
+
+
+/**
+ * @summary Login
+ */
+
+
+
+export const LoginBody = zod.object({
+  "email": zod.string().email(),
+  "password": zod.string().min(1)
+})
+
+export const LoginResponse = zod.object({
+  "access_token": zod.string(),
+  "token_type": zod.string(),
+  "user": zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "email": zod.string(),
+  "is_active": zod.boolean(),
+  "created_at": zod.string()
+})
+})
+
+
+/**
+ * @summary Get current user
+ */
+export const GetMeResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "email": zod.string(),
+  "is_active": zod.boolean(),
+  "created_at": zod.string()
+})
+
+
+/**
  * @summary List all tasks
  */
 export const ListTasksQueryParams = zod.object({

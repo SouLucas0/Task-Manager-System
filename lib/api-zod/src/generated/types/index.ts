@@ -6,12 +6,15 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './authResponse';
 export * from './category';
 export * from './categoryInput';
 export * from './healthStatus';
 export * from './listTasksParams';
 export * from './listTasksPriority';
 export * from './listTasksStatus';
+export * from './loginInput';
+export * from './registerInput';
 export * from './task';
 export * from './taskInput';
 export * from './taskInputPriority';
@@ -24,3 +27,4 @@ export * from './taskSummaryByStatus';
 export * from './taskUpdate';
 export * from './taskUpdatePriority';
 export * from './taskUpdateStatus';
+export * from './user';

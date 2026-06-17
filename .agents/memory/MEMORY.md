@@ -1,0 +1,1 @@
+- [bcrypt passlib compatibility](bcrypt-passlib.md) — bcrypt must stay at 4.x; version 5.x breaks passlib 1.7.4 with a 72-byte password ValueError

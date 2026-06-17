@@ -8,6 +8,7 @@ class Task(BaseEntity):
     """
     Task model — extends BaseEntity.
     Represents a single unit of work with status, priority, and optional deadline.
+    Belongs to a User (owner) and optionally to a Category.
     """
     __tablename__ = "tasks"
 
@@ -19,11 +20,18 @@ class Task(BaseEntity):
     category_id: Mapped[Optional[int]] = mapped_column(
         Integer, ForeignKey("categories.id", ondelete="SET NULL"), nullable=True
     )
+    user_id: Mapped[Optional[int]] = mapped_column(
+        Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=True, index=True
+    )
 
     category: Mapped[Optional["Category"]] = relationship(  # type: ignore[name-defined]
         "Category",
         back_populates="tasks",
         lazy="joined",
+    )
+    user: Mapped[Optional["User"]] = relationship(  # type: ignore[name-defined]
+        "User",
+        back_populates="tasks",
     )
 
     def to_dict(self) -> dict:

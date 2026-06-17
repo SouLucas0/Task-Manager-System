@@ -1,7 +1,7 @@
 """
 TaskFlow — Python OOP backend
 Implements a task management REST API using:
-  - Inheritance    : BaseEntity → Task, Category; BaseRepository → TaskRepository, CategoryRepository
+  - Inheritance    : BaseEntity → Task, Category, User; BaseRepository → TaskRepository, CategoryRepository, UserRepository
   - Encapsulation  : Services hide repository access; _to_dict() is protected on models
   - Abstraction    : BaseRepository (ABC) defines the interface; concrete classes implement it
   - Polymorphism   : find_all() is overridden in TaskRepository with filtering behaviour
@@ -17,7 +17,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from database import engine
 from models import Base
-from routes import health_router, tasks_router, categories_router
+from routes import health_router, tasks_router, categories_router, auth_router
 
 Base.metadata.create_all(bind=engine)
 
@@ -32,5 +32,6 @@ app.add_middleware(
 )
 
 app.include_router(health_router, prefix="/api")
+app.include_router(auth_router, prefix="/api")
 app.include_router(tasks_router, prefix="/api")
 app.include_router(categories_router, prefix="/api")

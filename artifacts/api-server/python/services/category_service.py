@@ -15,20 +15,20 @@ class CategoryService:
     def __init__(self, db: Session) -> None:
         self._repo = CategoryRepository(db)
 
-    def list_categories(self) -> List[dict]:
-        categories = self._repo.find_all()
+    def list_categories(self, user_id: int) -> List[dict]:
+        categories = self._repo.find_all_by_user(user_id)
         return [c.to_dict() for c in categories]
 
-    def create_category(self, data: CategoryInputSchema) -> dict:
-        existing = self._repo.find_by_name(data.name)
+    def create_category(self, data: CategoryInputSchema, user_id: int) -> dict:
+        existing = self._repo.find_by_name_and_user(data.name, user_id)
         if existing:
             raise HTTPException(status_code=409, detail="Category with this name already exists")
-        category = Category(name=data.name, color=data.color)
+        category = Category(name=data.name, color=data.color, user_id=user_id)
         saved = self._repo.save(category)
         return saved.to_dict()
 
-    def delete_category(self, category_id: int) -> None:
+    def delete_category(self, category_id: int, user_id: int) -> None:
         category = self._repo.find_by_id(category_id)
-        if not category:
+        if not category or category.user_id != user_id:
             raise HTTPException(status_code=404, detail="Category not found")
         self._repo.delete(category)

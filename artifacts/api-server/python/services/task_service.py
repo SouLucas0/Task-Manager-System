@@ -21,20 +21,21 @@ class TaskService:
 
     def list_tasks(
         self,
+        user_id: int,
         status: Optional[str] = None,
         priority: Optional[str] = None,
         category_id: Optional[int] = None,
     ) -> List[dict]:
-        tasks = self._repo.find_all(status=status, priority=priority, category_id=category_id)
+        tasks = self._repo.find_all(user_id=user_id, status=status, priority=priority, category_id=category_id)
         return [t.to_dict() for t in tasks]
 
-    def get_task(self, task_id: int) -> dict:
+    def get_task(self, task_id: int, user_id: int) -> dict:
         task = self._repo.find_by_id(task_id)
-        if not task:
+        if not task or task.user_id != user_id:
             raise HTTPException(status_code=404, detail="Task not found")
         return task.to_dict()
 
-    def create_task(self, data: TaskInputSchema) -> dict:
+    def create_task(self, data: TaskInputSchema, user_id: int) -> dict:
         task = Task(
             title=data.title,
             description=data.description,
@@ -42,13 +43,14 @@ class TaskService:
             priority=data.priority,
             due_date=data.due_date,
             category_id=data.category_id,
+            user_id=user_id,
         )
         saved = self._repo.save(task)
         return saved.to_dict()
 
-    def update_task(self, task_id: int, data: TaskUpdateSchema) -> dict:
+    def update_task(self, task_id: int, data: TaskUpdateSchema, user_id: int) -> dict:
         task = self._repo.find_by_id(task_id)
-        if not task:
+        if not task or task.user_id != user_id:
             raise HTTPException(status_code=404, detail="Task not found")
         updates = data.model_dump(exclude_none=True)
         for field, value in updates.items():
@@ -56,24 +58,24 @@ class TaskService:
         saved = self._repo.save(task)
         return saved.to_dict()
 
-    def delete_task(self, task_id: int) -> None:
+    def delete_task(self, task_id: int, user_id: int) -> None:
         task = self._repo.find_by_id(task_id)
-        if not task:
+        if not task or task.user_id != user_id:
             raise HTTPException(status_code=404, detail="Task not found")
         self._repo.delete(task)
 
-    def get_summary(self) -> TaskSummarySchema:
+    def get_summary(self, user_id: int) -> TaskSummarySchema:
         return TaskSummarySchema(
-            total=self._repo.total_count(),
-            overdue=self._repo.count_overdue(),
+            total=self._repo.total_count(user_id),
+            overdue=self._repo.count_overdue(user_id),
             by_status={
-                "todo": self._repo.count_by_status("todo"),
-                "in_progress": self._repo.count_by_status("in_progress"),
-                "done": self._repo.count_by_status("done"),
+                "todo": self._repo.count_by_status("todo", user_id),
+                "in_progress": self._repo.count_by_status("in_progress", user_id),
+                "done": self._repo.count_by_status("done", user_id),
             },
             by_priority={
-                "low": self._repo.count_by_priority("low"),
-                "medium": self._repo.count_by_priority("medium"),
-                "high": self._repo.count_by_priority("high"),
+                "low": self._repo.count_by_priority("low", user_id),
+                "medium": self._repo.count_by_priority("medium", user_id),
+                "high": self._repo.count_by_priority("high", user_id),
             },
         )

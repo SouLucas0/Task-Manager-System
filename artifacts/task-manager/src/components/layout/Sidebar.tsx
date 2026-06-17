@@ -1,11 +1,21 @@
 import { Link, useLocation } from "wouter";
-import { LayoutDashboard, CheckSquare, Tags } from "lucide-react";
+import { LayoutDashboard, CheckSquare, Tags, LogOut, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useGetTasksSummary } from "@workspace/api-client-react";
 import { getGetTasksSummaryQueryKey } from "@workspace/api-client-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function Sidebar() {
   const [location] = useLocation();
+  const { user, logout } = useAuth();
   const { data: summary } = useGetTasksSummary({
     query: {
       queryKey: getGetTasksSummaryQueryKey(),
@@ -20,13 +30,13 @@ export function Sidebar() {
     },
     {
       href: "/tasks",
-      label: "Tasks",
+      label: "Tarefas",
       icon: CheckSquare,
       badge: summary?.by_status?.todo ? summary.by_status.todo : undefined,
     },
     {
       href: "/categories",
-      label: "Categories",
+      label: "Categorias",
       icon: Tags,
     },
   ];
@@ -65,8 +75,33 @@ export function Sidebar() {
           );
         })}
       </nav>
-      <div className="p-4 border-t border-sidebar-border text-xs text-sidebar-foreground/50">
-        Focus mode active
+      <div className="p-4 border-t border-sidebar-border">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-2 px-3 text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50"
+            >
+              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 shrink-0">
+                <User className="h-4 w-4 text-primary" />
+              </div>
+              <div className="flex flex-col items-start overflow-hidden">
+                <span className="text-xs font-medium truncate max-w-[130px]">{user?.name}</span>
+                <span className="text-[10px] text-sidebar-foreground/50 truncate max-w-[130px]">{user?.email}</span>
+              </div>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="top" align="start" className="w-56">
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="text-destructive focus:text-destructive cursor-pointer"
+              onClick={logout}
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Sair
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );
