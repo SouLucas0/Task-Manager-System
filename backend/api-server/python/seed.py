@@ -1,6 +1,6 @@
 """
 Seed script — populates initial categories and tasks for demo purposes.
-Run once: python artifacts/api-server/python/seed.py
+Run once: python backend/api-server/python/seed.py
 """
 import os
 import sys

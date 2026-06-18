@@ -4,11 +4,11 @@ Sistema web de gerenciamento de tarefas implementado com conceitos de POO em Pyt
 
 ## Run & Operate
 
-- `cd /home/runner/workspace/artifacts/api-server/python && uvicorn main:app --host 0.0.0.0 --port 8080 --reload` — API Python
+- `cd /home/runner/workspace/backend/api-server/python && uvicorn main:app --host 0.0.0.0 --port 8080 --reload` — API Python
 - `pnpm --filter @workspace/task-manager run dev` — frontend React
 - `pnpm run typecheck` — typecheck completo
 - `pnpm --filter @workspace/api-spec run codegen` — regenerar hooks e schemas Zod
-- `python artifacts/api-server/python/seed.py` — popular banco com dados iniciais
+- `python backend/api-server/python/seed.py` — popular banco com dados iniciais
 - Required env: `DATABASE_URL` — Postgres connection string
 
 ## Stack
@@ -22,17 +22,17 @@ Sistema web de gerenciamento de tarefas implementado com conceitos de POO em Pyt
 
 ## Where things live
 
-- `lib/api-spec/openapi.yaml` — contrato OpenAPI (fonte da verdade)
-- `artifacts/api-server/python/` — backend Python
+- `shared/api-spec/openapi.yaml` — contrato OpenAPI (fonte da verdade)
+- `backend/api-server/python/` — backend Python
   - `models/` — SQLAlchemy ORM (BaseEntity, Task, Category)
   - `repositories/` — padrão Repository (BaseRepository abstrata)
   - `services/` — lógica de negócio (TaskService, CategoryService)
   - `schemas/` — validação Pydantic
   - `routes/` — rotas FastAPI
   - `main.py` — app FastAPI com tabelas criadas no startup
-- `artifacts/task-manager/src/` — frontend React
-- `lib/api-client-react/src/generated/` — hooks React Query gerados
-- `lib/api-zod/src/generated/` — schemas Zod gerados
+- `frontend/task-manager/src/` — frontend React
+- `shared/api-client-react/src/generated/` — hooks React Query gerados
+- `shared/api-zod/src/generated/` — schemas Zod gerados
 
 ## Architecture decisions
 
@@ -66,7 +66,7 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 ## Gotchas
 
-- O servidor Python roda de `artifacts/api-server/python/` — o `cd` para esse diretório é necessário pois os imports são relativos.
+- O servidor Python roda de `backend/api-server/python/` — o `cd` para esse diretório é necessário pois os imports são relativos.
 - Após mudar o schema, rodar `python seed.py` com o banco limpo para repopular.
 - Não usar `--app-dir` do uvicorn — usar `cd` com caminho absoluto no run command.
 - `bcrypt` deve ser versão `4.0.1` — versão 5.x quebra o passlib com `ValueError: password cannot be longer than 72 bytes`.

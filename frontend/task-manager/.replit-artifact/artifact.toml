@@ -2,7 +2,7 @@ kind = "web"
 previewPath = "/"
 title = "Gerenciador de Tarefas"
 version = "1.0.0"
-id = "artifacts/task-manager"
+id = "frontend/task-manager"
 router = "path"
 
 [[integratedSkills]]
@@ -19,7 +19,7 @@ run = "pnpm --filter @workspace/task-manager run dev"
 
 [services.production]
 build = [ "pnpm", "--filter", "@workspace/task-manager", "run", "build" ]
-publicDir = "artifacts/task-manager/dist/public"
+publicDir = "frontend/task-manager/dist/public"
 serve = "static"
 
 [[services.production.rewrites]]
