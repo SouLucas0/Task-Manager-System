@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { useListCategories, getListCategoriesQueryKey, useCreateCategory, useDeleteCategory } from "@workspace/api-client-react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useStore, createCategory, deleteCategory } from "@/lib/store";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,52 +18,28 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export default function Categories() {
-  const queryClient = useQueryClient();
+  const { categories } = useStore();
   const { toast } = useToast();
-  
-  const { data: categories, isLoading } = useListCategories({
-    query: {
-      queryKey: getListCategoriesQueryKey(),
-    }
-  });
-
-  const createCategory = useCreateCategory();
-  const deleteCategory = useDeleteCategory();
+  const [deleting, setDeleting] = useState<number | null>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      color: "#808080",
-    },
+    defaultValues: { name: "", color: "#808080" },
   });
 
   const onSubmit = (data: FormValues) => {
-    createCategory.mutate(
-      { data },
-      {
-        onSuccess: () => {
-          toast({ title: "Category created" });
-          form.reset();
-          queryClient.invalidateQueries({ queryKey: getListCategoriesQueryKey() });
-        },
-        onError: () => {
-          toast({ title: "Failed to create category", variant: "destructive" });
-        }
-      }
-    );
+    createCategory({ name: data.name, color: data.color || "#808080" });
+    toast({ title: "Category created" });
+    form.reset();
   };
 
   const handleDelete = (id: number) => {
-    deleteCategory.mutate(
-      { id },
-      {
-        onSuccess: () => {
-          toast({ title: "Category deleted" });
-          queryClient.invalidateQueries({ queryKey: getListCategoriesQueryKey() });
-        },
-      }
-    );
+    setDeleting(id);
+    setTimeout(() => {
+      deleteCategory(id);
+      toast({ title: "Category deleted" });
+      setDeleting(null);
+    }, 300);
   };
 
   return (
@@ -101,18 +76,14 @@ export default function Categories() {
                   render={({ field }) => (
                     <FormItem className="flex items-center space-x-2">
                       <FormControl>
-                        <input 
-                          type="color" 
-                          className="h-8 w-14 p-0 border-0 bg-transparent cursor-pointer rounded-md overflow-hidden" 
-                          {...field} 
-                        />
+                        <input type="color" className="h-8 w-14 p-0 border-0 bg-transparent cursor-pointer rounded-md overflow-hidden" {...field} />
                       </FormControl>
                       <span className="text-sm text-muted-foreground uppercase">{field.value}</span>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full" disabled={createCategory.isPending}>
+                <Button type="submit" className="w-full">
                   <PlusCircle className="mr-2 h-4 w-4" />
                   Create
                 </Button>
@@ -122,20 +93,15 @@ export default function Categories() {
         </Card>
 
         <div className="md:col-span-2 space-y-3">
-          {isLoading ? (
-            <div className="text-sm text-muted-foreground">Loading categories...</div>
-          ) : categories?.length === 0 ? (
+          {categories.length === 0 ? (
             <div className="text-center py-8 border rounded-lg bg-card text-muted-foreground text-sm">
               No categories created yet.
             </div>
           ) : (
-            categories?.map((cat) => (
+            categories.map((cat) => (
               <Card key={cat.id} className="flex items-center justify-between p-4">
                 <div className="flex items-center gap-3">
-                  <div 
-                    className="w-4 h-4 rounded-full border border-black/10 shadow-inner" 
-                    style={{ backgroundColor: cat.color || '#ccc' }}
-                  />
+                  <div className="w-4 h-4 rounded-full border border-black/10 shadow-inner" style={{ backgroundColor: cat.color || '#ccc' }} />
                   <span className="font-medium">{cat.name}</span>
                 </div>
                 <Button 
@@ -143,7 +109,7 @@ export default function Categories() {
                   size="icon"
                   className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                   onClick={() => handleDelete(cat.id)}
-                  disabled={deleteCategory.isPending}
+                  disabled={deleting === cat.id}
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>

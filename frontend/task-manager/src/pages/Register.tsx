@@ -26,29 +26,19 @@ export default function Register() {
       return;
     }
     setIsLoading(true);
-    try {
-      const res = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: form.name, email: form.email, password: form.password }),
-      });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.detail || "Erro ao criar conta");
-      }
-      const data = await res.json();
-      login(data.access_token, data.user);
-      toast({ title: `Bem-vindo, ${data.user.name}!`, description: "Conta criada com sucesso." });
-      navigate("/");
-    } catch (err: unknown) {
-      toast({
-        title: "Erro ao cadastrar",
-        description: err instanceof Error ? err.message : "Tente novamente",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
+    await new Promise((r) => setTimeout(r, 500));
+    // Store user in localStorage
+    const stored = localStorage.getItem("task-manager-users");
+    let users: { name: string; email: string; password: string }[] = [];
+    if (stored) {
+      try { users = JSON.parse(stored); } catch { /* noop */ }
     }
+    users.push({ name: form.name, email: form.email, password: form.password });
+    localStorage.setItem("task-manager-users", JSON.stringify(users));
+    login("local-token", { id: 1, name: form.name, email: form.email });
+    toast({ title: `Bem-vindo, ${form.name}!`, description: "Conta criada com sucesso." });
+    navigate("/");
+    setIsLoading(false);
   };
 
   return (
@@ -71,51 +61,19 @@ export default function Register() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Nome</Label>
-                <Input
-                  id="name"
-                  type="text"
-                  placeholder="Seu nome"
-                  value={form.name}
-                  onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                  required
-                  autoComplete="name"
-                />
+                <Input id="name" type="text" placeholder="Seu nome" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} required autoComplete="name" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="seu@email.com"
-                  value={form.email}
-                  onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-                  required
-                  autoComplete="email"
-                />
+                <Input id="email" type="email" placeholder="seu@email.com" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} required autoComplete="email" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Senha</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Mínimo 6 caracteres"
-                  value={form.password}
-                  onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
-                  required
-                  autoComplete="new-password"
-                />
+                <Input id="password" type="password" placeholder="Mínimo 6 caracteres" value={form.password} onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))} required autoComplete="new-password" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="confirmPassword">Confirmar senha</Label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  placeholder="••••••••"
-                  value={form.confirmPassword}
-                  onChange={(e) => setForm((f) => ({ ...f, confirmPassword: e.target.value }))}
-                  required
-                  autoComplete="new-password"
-                />
+                <Input id="confirmPassword" type="password" placeholder="••••••••" value={form.confirmPassword} onChange={(e) => setForm((f) => ({ ...f, confirmPassword: e.target.value }))} required autoComplete="new-password" />
               </div>
             </CardContent>
             <CardFooter className="flex flex-col gap-3">
@@ -125,11 +83,7 @@ export default function Register() {
               </Button>
               <p className="text-sm text-muted-foreground text-center">
                 Já tem conta?{" "}
-                <button
-                  type="button"
-                  className="text-primary underline-offset-4 hover:underline font-medium"
-                  onClick={() => navigate("/login")}
-                >
+                <button type="button" className="text-primary underline-offset-4 hover:underline font-medium" onClick={() => navigate("/login")}>
                   Entrar
                 </button>
               </p>

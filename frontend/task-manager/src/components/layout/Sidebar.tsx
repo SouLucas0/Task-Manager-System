@@ -1,10 +1,10 @@
 import { Link, useLocation } from "wouter";
 import { LayoutDashboard, CheckSquare, Tags, Bug, LogOut, User } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useGetTasksSummary } from "@workspace/api-client-react";
-import { getGetTasksSummaryQueryKey } from "@workspace/api-client-react";
+import { useStore, getTasksSummary } from "@/lib/store";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
+import { useMemo } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,42 +16,20 @@ import {
 export function Sidebar() {
   const [location] = useLocation();
   const { user, logout } = useAuth();
-  const { data: summary } = useGetTasksSummary({
-    query: {
-      queryKey: getGetTasksSummaryQueryKey(),
-    }
-  });
+  const { tasks } = useStore();
+  const summary = useMemo(() => getTasksSummary(), [tasks]);
 
   const links = [
-    {
-      href: "/",
-      label: "Dashboard",
-      icon: LayoutDashboard,
-    },
-    {
-      href: "/tasks",
-      label: "Tarefas",
-      icon: CheckSquare,
-      badge: summary?.by_status?.todo ? summary.by_status.todo : undefined,
-    },
-    {
-      href: "/categories",
-      label: "Categorias",
-      icon: Tags,
-    },
-    {
-      href: "/bugs",
-      label: "Bugs",
-      icon: Bug,
-    },
+    { href: "/", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/tasks", label: "Tarefas", icon: CheckSquare, badge: summary?.by_status?.todo ? summary.by_status.todo : undefined },
+    { href: "/categories", label: "Categorias", icon: Tags },
+    { href: "/bugs", label: "Bugs", icon: Bug },
   ];
 
   return (
     <div className="flex h-full w-64 flex-col bg-sidebar border-r border-sidebar-border">
       <div className="flex h-16 items-center px-6 border-b border-sidebar-border">
-        <h1 className="text-xl font-bold tracking-tight text-sidebar-foreground">
-          Task Manager
-        </h1>
+        <h1 className="text-xl font-bold tracking-tight text-sidebar-foreground">Task Manager</h1>
       </div>
       <nav className="flex-1 space-y-1 p-4">
         {links.map((link) => {
@@ -62,9 +40,7 @@ export function Sidebar() {
               href={link.href}
               className={cn(
                 "flex items-center justify-between rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                isActive
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                  : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                isActive ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
               )}
             >
               <div className="flex items-center">
@@ -72,9 +48,7 @@ export function Sidebar() {
                 {link.label}
               </div>
               {link.badge !== undefined && (
-                <span className="bg-primary text-primary-foreground ml-auto inline-block rounded-full py-0.5 px-2 text-xs font-semibold">
-                  {link.badge}
-                </span>
+                <span className="bg-primary text-primary-foreground ml-auto inline-block rounded-full py-0.5 px-2 text-xs font-semibold">{link.badge}</span>
               )}
             </Link>
           );
@@ -83,10 +57,7 @@ export function Sidebar() {
       <div className="p-4 border-t border-sidebar-border">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              className="w-full justify-start gap-2 px-3 text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50"
-            >
+            <Button variant="ghost" className="w-full justify-start gap-2 px-3 text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50">
               <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 shrink-0">
                 <User className="h-4 w-4 text-primary" />
               </div>
@@ -98,10 +69,7 @@ export function Sidebar() {
           </DropdownMenuTrigger>
           <DropdownMenuContent side="top" align="start" className="w-56">
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="text-destructive focus:text-destructive cursor-pointer"
-              onClick={logout}
-            >
+            <DropdownMenuItem className="text-destructive focus:text-destructive cursor-pointer" onClick={logout}>
               <LogOut className="mr-2 h-4 w-4" />
               Sair
             </DropdownMenuItem>

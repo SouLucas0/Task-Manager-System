@@ -1,57 +1,36 @@
-import { useState } from "react";
-import { useListTasks, getListTasksQueryKey, useUpdateTask, TaskStatus, TaskPriority, ListTasksStatus, ListTasksPriority, useListCategories, getListCategoriesQueryKey } from "@workspace/api-client-react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useState, useMemo } from "react";
+import { useStore, updateTask, deleteTask } from "@/lib/store";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { format } from "date-fns";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
 import { TaskSheet } from "@/components/tasks/TaskSheet";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Tasks() {
-  const queryClient = useQueryClient();
-  const [statusFilter, setStatusFilter] = useState<ListTasksStatus | "all">("all");
-  const [priorityFilter, setPriorityFilter] = useState<ListTasksPriority | "all">("all");
+  const { tasks, categories } = useStore();
+  const { toast } = useToast();
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [priorityFilter, setPriorityFilter] = useState<string>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
-  
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
 
-  const { data: categories } = useListCategories({
-    query: {
-      queryKey: getListCategoriesQueryKey(),
-    }
-  });
+  const filteredTasks = useMemo(() => {
+    return tasks.filter((t) => {
+      if (statusFilter !== "all" && t.status !== statusFilter) return false;
+      if (priorityFilter !== "all" && t.priority !== priorityFilter) return false;
+      if (categoryFilter !== "all" && String(t.category_id) !== categoryFilter) return false;
+      return true;
+    });
+  }, [tasks, statusFilter, priorityFilter, categoryFilter]);
 
-  const queryParams = {
-    ...(statusFilter !== "all" ? { status: statusFilter } : {}),
-    ...(priorityFilter !== "all" ? { priority: priorityFilter } : {}),
-    ...(categoryFilter !== "all" ? { category_id: parseInt(categoryFilter) } : {})
-  };
-
-  const { data: tasks, isLoading } = useListTasks(
-    queryParams,
-    {
-      query: {
-        queryKey: getListTasksQueryKey(queryParams),
-      },
-    }
-  );
-
-  const updateTask = useUpdateTask();
-
-  const handleStatusToggle = (e: React.MouseEvent, id: number, currentStatus: TaskStatus) => {
-    e.stopPropagation(); // prevent opening sheet
+  const handleStatusToggle = (e: React.MouseEvent, id: number, currentStatus: string) => {
+    e.stopPropagation();
     const newStatus = currentStatus === "done" ? "todo" : "done";
-    updateTask.mutate(
-      { id, data: { status: newStatus } },
-      {
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: getListTasksQueryKey() });
-        },
-      }
-    );
+    updateTask(id, { status: newStatus });
+    toast({ title: `Status atualizado: ${newStatus === "done" ? "Conclu\u00eddo" : "A fazer"}` });
   };
 
   const openTask = (id: number) => {
@@ -68,10 +47,8 @@ export default function Tasks() {
         </div>
         
         <div className="flex flex-wrap items-center gap-2">
-          <Select value={statusFilter} onValueChange={(val: any) => setStatusFilter(val)}>
-            <SelectTrigger className="w-[130px]">
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-[130px]"><SelectValue placeholder="Status" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Status</SelectItem>
               <SelectItem value="todo">To Do</SelectItem>
@@ -80,10 +57,8 @@ export default function Tasks() {
             </SelectContent>
           </Select>
 
-          <Select value={priorityFilter} onValueChange={(val: any) => setPriorityFilter(val)}>
-            <SelectTrigger className="w-[130px]">
-              <SelectValue placeholder="Priority" />
-            </SelectTrigger>
+          <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+            <SelectTrigger className="w-[130px]"><SelectValue placeholder="Priority" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Priority</SelectItem>
               <SelectItem value="low">Low</SelectItem>
@@ -93,12 +68,10 @@ export default function Tasks() {
           </Select>
 
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-[130px]">
-              <SelectValue placeholder="Category" />
-            </SelectTrigger>
+            <SelectTrigger className="w-[130px]"><SelectValue placeholder="Category" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Categories</SelectItem>
-              {categories?.map((cat) => (
+              {categories.map((cat) => (
                 <SelectItem key={cat.id} value={String(cat.id)}>{cat.name}</SelectItem>
               ))}
             </SelectContent>
@@ -107,23 +80,13 @@ export default function Tasks() {
       </div>
 
       <div className="space-y-2">
-        {isLoading ? (
-          Array(5).fill(0).map((_, i) => (
-            <Card key={i} className="p-4 flex items-center gap-4">
-              <Skeleton className="h-5 w-5 rounded-sm" />
-              <div className="space-y-2 flex-1">
-                <Skeleton className="h-4 w-1/3" />
-                <Skeleton className="h-3 w-1/4" />
-              </div>
-            </Card>
-          ))
-        ) : tasks?.length === 0 ? (
+        {filteredTasks.length === 0 ? (
           <div className="text-center py-12 border-2 border-dashed rounded-lg border-muted">
             <h3 className="text-lg font-medium">No tasks found</h3>
             <p className="text-sm text-muted-foreground mt-1">Try adjusting your filters or add a new task.</p>
           </div>
         ) : (
-          tasks?.map((task) => (
+          filteredTasks.map((task) => (
             <Card 
               key={task.id} 
               onClick={() => openTask(task.id)}
@@ -162,11 +125,7 @@ export default function Tasks() {
         )}
       </div>
 
-      <TaskSheet 
-        taskId={selectedTaskId} 
-        open={sheetOpen} 
-        onOpenChange={setSheetOpen} 
-      />
+      <TaskSheet taskId={selectedTaskId} open={sheetOpen} onOpenChange={setSheetOpen} />
     </div>
   );
 }

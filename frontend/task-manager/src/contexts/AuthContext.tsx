@@ -1,66 +1,36 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { setAuthTokenGetter } from "@workspace/api-client-react";
+import { getAuth, setAuth, clearAuth, type User } from "@/lib/store";
 
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  is_active: boolean;
-  created_at: string;
-}
-
-interface AuthState {
+interface AuthContextValue {
   user: User | null;
   token: string | null;
   isLoading: boolean;
-}
-
-interface AuthContextValue extends AuthState {
+  isAuthenticated: boolean;
   login: (token: string, user: User) => void;
   logout: () => void;
-  isAuthenticated: boolean;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-const TOKEN_KEY = "taskflow_token";
-const USER_KEY = "taskflow_user";
-
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<AuthState>({
+  const [state, setState] = useState<{ user: User | null; token: string | null; isLoading: boolean }>({
     user: null,
     token: null,
     isLoading: true,
   });
 
   useEffect(() => {
-    const storedToken = localStorage.getItem(TOKEN_KEY);
-    const storedUser = localStorage.getItem(USER_KEY);
-    if (storedToken && storedUser) {
-      try {
-        const user = JSON.parse(storedUser) as User;
-        setState({ user, token: storedToken, isLoading: false });
-      } catch {
-        setState({ user: null, token: null, isLoading: false });
-      }
-    } else {
-      setState({ user: null, token: null, isLoading: false });
-    }
+    const { user, token } = getAuth();
+    setState({ user, token, isLoading: false });
   }, []);
 
-  useEffect(() => {
-    setAuthTokenGetter(() => state.token);
-  }, [state.token]);
-
   const login = (token: string, user: User) => {
-    localStorage.setItem(TOKEN_KEY, token);
-    localStorage.setItem(USER_KEY, JSON.stringify(user));
+    setAuth(user, token);
     setState({ user, token, isLoading: false });
   };
 
   const logout = () => {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(USER_KEY);
+    clearAuth();
     setState({ user: null, token: null, isLoading: false });
   };
 

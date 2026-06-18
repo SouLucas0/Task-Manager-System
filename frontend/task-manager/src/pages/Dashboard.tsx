@@ -1,4 +1,5 @@
-import { useGetTasksSummary, getGetTasksSummaryQueryKey, useListTasks, getListTasksQueryKey, TaskStatus } from "@workspace/api-client-react";
+import { useMemo } from "react";
+import { useStore, getTasksSummary } from "@/lib/store";
 import { QuickAddTask } from "@/components/tasks/QuickAddTask";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { CheckCircle2, CircleDashed, Clock, AlertCircle } from "lucide-react";
@@ -7,20 +8,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { format } from "date-fns";
 
 export default function Dashboard() {
-  const { data: summary, isLoading: summaryLoading } = useGetTasksSummary({
-    query: {
-      queryKey: getGetTasksSummaryQueryKey(),
-    },
-  });
-
-  const { data: recentTasks, isLoading: tasksLoading } = useListTasks(
-    { status: "todo" },
-    {
-      query: {
-        queryKey: getListTasksQueryKey({ status: "todo" }),
-      }
-    }
-  );
+  const { tasks, categories } = useStore();
+  const summary = useMemo(() => getTasksSummary(), [tasks]);
+  const recentTasks = useMemo(() => tasks.filter((t) => t.status === "todo").slice(0, 6), [tasks]);
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
@@ -36,7 +26,7 @@ export default function Dashboard() {
             <CircleDashed className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{summaryLoading ? "-" : summary?.total}</div>
+            <div className="text-2xl font-bold">{summary.total}</div>
           </CardContent>
         </Card>
 
@@ -46,7 +36,7 @@ export default function Dashboard() {
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{summaryLoading ? "-" : summary?.by_status.todo}</div>
+            <div className="text-2xl font-bold">{summary.by_status.todo}</div>
           </CardContent>
         </Card>
 
@@ -56,7 +46,7 @@ export default function Dashboard() {
             <CheckCircle2 className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{summaryLoading ? "-" : summary?.by_status.done}</div>
+            <div className="text-2xl font-bold">{summary.by_status.done}</div>
           </CardContent>
         </Card>
 
@@ -66,7 +56,7 @@ export default function Dashboard() {
             <AlertCircle className="h-4 w-4 text-destructive" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-destructive">{summaryLoading ? "-" : summary?.overdue}</div>
+            <div className="text-2xl font-bold text-destructive">{summary.overdue}</div>
           </CardContent>
         </Card>
       </div>
@@ -93,27 +83,27 @@ export default function Dashboard() {
                   <div className="w-1/3 text-sm font-medium">High</div>
                   <div className="w-2/3 flex items-center gap-2">
                     <div className="h-2 flex-1 rounded-full bg-muted overflow-hidden">
-                      <div className="h-full bg-destructive" style={{ width: summary?.total ? `${((summary.by_priority.high || 0) / summary.total) * 100}%` : '0%' }} />
+                      <div className="h-full bg-destructive" style={{ width: summary.total ? `${((summary.by_priority.high || 0) / summary.total) * 100}%` : '0%' }} />
                     </div>
-                    <span className="text-sm text-muted-foreground w-6 text-right">{summary?.by_priority.high || 0}</span>
+                    <span className="text-sm text-muted-foreground w-6 text-right">{summary.by_priority.high || 0}</span>
                   </div>
                 </div>
                 <div className="flex items-center">
                   <div className="w-1/3 text-sm font-medium">Medium</div>
                   <div className="w-2/3 flex items-center gap-2">
                     <div className="h-2 flex-1 rounded-full bg-muted overflow-hidden">
-                      <div className="h-full bg-primary" style={{ width: summary?.total ? `${((summary.by_priority.medium || 0) / summary.total) * 100}%` : '0%' }} />
+                      <div className="h-full bg-primary" style={{ width: summary.total ? `${((summary.by_priority.medium || 0) / summary.total) * 100}%` : '0%' }} />
                     </div>
-                    <span className="text-sm text-muted-foreground w-6 text-right">{summary?.by_priority.medium || 0}</span>
+                    <span className="text-sm text-muted-foreground w-6 text-right">{summary.by_priority.medium || 0}</span>
                   </div>
                 </div>
                 <div className="flex items-center">
                   <div className="w-1/3 text-sm font-medium">Low</div>
                   <div className="w-2/3 flex items-center gap-2">
                     <div className="h-2 flex-1 rounded-full bg-muted overflow-hidden">
-                      <div className="h-full bg-chart-2" style={{ width: summary?.total ? `${((summary.by_priority.low || 0) / summary.total) * 100}%` : '0%' }} />
+                      <div className="h-full bg-chart-2" style={{ width: summary.total ? `${((summary.by_priority.low || 0) / summary.total) * 100}%` : '0%' }} />
                     </div>
-                    <span className="text-sm text-muted-foreground w-6 text-right">{summary?.by_priority.low || 0}</span>
+                    <span className="text-sm text-muted-foreground w-6 text-right">{summary.by_priority.low || 0}</span>
                   </div>
                 </div>
               </div>
@@ -128,12 +118,10 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent className="flex-1">
             <div className="space-y-3">
-              {tasksLoading ? (
-                <div className="text-sm text-muted-foreground">Loading...</div>
-              ) : recentTasks?.length === 0 ? (
+              {recentTasks.length === 0 ? (
                 <div className="text-sm text-muted-foreground text-center py-6 border-2 border-dashed rounded-lg border-muted">No pending tasks. You're all caught up!</div>
               ) : (
-                recentTasks?.slice(0, 6).map((task) => (
+                recentTasks.map((task) => (
                   <div key={task.id} className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-muted/30 transition-colors">
                     <div className="flex items-center gap-3 min-w-0">
                       <Checkbox checked={false} disabled />

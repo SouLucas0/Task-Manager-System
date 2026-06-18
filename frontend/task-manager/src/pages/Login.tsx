@@ -18,28 +18,27 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.detail || "Email ou senha inválidos");
-      }
-      const data = await res.json();
-      login(data.access_token, data.user);
+    // Simulate delay
+    await new Promise((r) => setTimeout(r, 500));
+    // Mock login: any credentials work (or use a stored user if available)
+    const stored = localStorage.getItem("task-manager-users");
+    let users: { name: string; email: string; password: string }[] = [];
+    if (stored) {
+      try { users = JSON.parse(stored); } catch { /* noop */ }
+    }
+    const user = users.find((u) => u.email === form.email && u.password === form.password);
+    if (user) {
+      login("local-token", { id: 1, name: user.name, email: user.email });
+      toast({ title: "Bem-vindo de volta!", description: `Olá, ${user.name}.` });
       navigate("/");
-    } catch (err: unknown) {
+    } else {
       toast({
         title: "Erro ao entrar",
-        description: err instanceof Error ? err.message : "Tente novamente",
+        description: "Email ou senha inválidos",
         variant: "destructive",
       });
-    } finally {
-      setIsLoading(false);
     }
+    setIsLoading(false);
   };
 
   return (
@@ -62,27 +61,11 @@ export default function Login() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="seu@email.com"
-                  value={form.email}
-                  onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-                  required
-                  autoComplete="email"
-                />
+                <Input id="email" type="email" placeholder="seu@email.com" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} required autoComplete="email" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Senha</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="••••••••"
-                  value={form.password}
-                  onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
-                  required
-                  autoComplete="current-password"
-                />
+                <Input id="password" type="password" placeholder="••••••••" value={form.password} onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))} required autoComplete="current-password" />
               </div>
             </CardContent>
             <CardFooter className="flex flex-col gap-3">
@@ -90,13 +73,21 @@ export default function Login() {
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Entrar
               </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={() => {
+                  login("demo-token", { id: 1, name: "Demo", email: "demo@taskmanager.com" });
+                  toast({ title: "Login demo ativado" });
+                  navigate("/");
+                }}
+              >
+                Entrar com Demo
+              </Button>
               <p className="text-sm text-muted-foreground text-center">
                 Não tem conta?{" "}
-                <button
-                  type="button"
-                  className="text-primary underline-offset-4 hover:underline font-medium"
-                  onClick={() => navigate("/register")}
-                >
+                <button type="button" className="text-primary underline-offset-4 hover:underline font-medium" onClick={() => navigate("/register")}>
                   Cadastre-se
                 </button>
               </p>
