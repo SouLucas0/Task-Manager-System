@@ -631,6 +631,12 @@ components:
           type: ["integer", "null"]
         issue_url:
           type: ["string", "null"]
+        url:
+          type: ["string", "null"]
+        user_agent:
+          type: ["string", "null"]
+        timestamp:
+          type: ["string", "null"]
         user_id:
           type: ["integer", "null"]
         created_at:
@@ -660,6 +666,12 @@ components:
         environment:
           type: string
         version:
+          type: string
+        url:
+          type: string
+        user_agent:
+          type: string
+        timestamp:
           type: string
 
     BugUpdate:

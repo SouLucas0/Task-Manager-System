@@ -13,6 +13,9 @@ class BugSchema(BaseModel):
     version: Optional[str] = None
     issue_number: Optional[int] = None
     issue_url: Optional[str] = None
+    url: Optional[str] = None
+    user_agent: Optional[str] = None
+    timestamp: Optional[str] = None
     user_id: Optional[int] = None
     created_at: str
     updated_at: str
@@ -28,6 +31,9 @@ class BugInputSchema(BaseModel):
     steps_to_reproduce: Optional[str] = None
     environment: Optional[str] = Field(default=None, max_length=255)
     version: Optional[str] = Field(default=None, max_length=100)
+    url: Optional[str] = Field(default=None, max_length=1000)
+    user_agent: Optional[str] = None
+    timestamp: Optional[str] = Field(default=None, max_length=30)
 
 
 class BugUpdateSchema(BaseModel):

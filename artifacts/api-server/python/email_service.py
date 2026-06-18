@@ -78,6 +78,36 @@ def _build_html(bug: dict) -> str:
           </td>
         </tr>"""
 
+    url_row = ""
+    if bug.get("url"):
+        url_row = f"""
+        <tr>
+          <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;">
+            <strong style="color:#374151;">URL</strong><br>
+            <a href="{bug['url']}" style="color:#2563eb;font-size:13px;">{bug['url']}</a>
+          </td>
+        </tr>"""
+
+    time_row = ""
+    if bug.get("timestamp"):
+        time_row = f"""
+        <tr>
+          <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;">
+            <strong style="color:#374151;">Horário</strong><br>
+            <span style="color:#6b7280;">{bug['timestamp']}</span>
+          </td>
+        </tr>"""
+
+    agent_row = ""
+    if bug.get("user_agent"):
+        agent_row = f"""
+        <tr>
+          <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;">
+            <strong style="color:#374151;">Navegador</strong><br>
+            <span style="color:#6b7280;font-size:13px;">{bug['user_agent']}</span>
+          </td>
+        </tr>"""
+
     return f"""
 <!DOCTYPE html>
 <html>
@@ -119,6 +149,9 @@ def _build_html(bug: dict) -> str:
         <tr>
           <td style="padding:8px 32px 24px;">
             <table width="100%" cellpadding="0" cellspacing="0">
+              {url_row}
+              {time_row}
+              {agent_row}
               {description_row}
               {steps_row}
               {env_row}
@@ -163,6 +196,12 @@ def send_bug_report_email(bug: dict) -> bool:
         f"Prioridade: {PRIORITY_LABELS.get(bug.get('priority','medium'), 'Média')}\n"
         f"Status: {STATUS_LABELS.get(bug.get('status','open'), 'Aberto')}\n"
     )
+    if bug.get("url"):
+        plain += f"URL: {bug['url']}\n"
+    if bug.get("timestamp"):
+        plain += f"Horário: {bug['timestamp']}\n"
+    if bug.get("user_agent"):
+        plain += f"Navegador: {bug['user_agent']}\n"
     if bug.get("description"):
         plain += f"Descrição: {bug['description']}\n"
     if bug.get("steps_to_reproduce"):

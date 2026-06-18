@@ -17,4 +17,7 @@ export interface BugInput {
   steps_to_reproduce?: string;
   environment?: string;
   version?: string;
+  url?: string;
+  user_agent?: string;
+  timestamp?: string;
 }

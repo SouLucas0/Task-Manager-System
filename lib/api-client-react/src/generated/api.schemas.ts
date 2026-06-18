@@ -204,6 +204,12 @@ export interface Bug {
   /** @nullable */
   issue_url?: string | null;
   /** @nullable */
+  url?: string | null;
+  /** @nullable */
+  user_agent?: string | null;
+  /** @nullable */
+  timestamp?: string | null;
+  /** @nullable */
   user_id?: number | null;
   created_at: string;
   updated_at: string;
@@ -238,6 +244,9 @@ export interface BugInput {
   steps_to_reproduce?: string;
   environment?: string;
   version?: string;
+  url?: string;
+  user_agent?: string;
+  timestamp?: string;
 }
 
 export type BugUpdateStatus = typeof BugUpdateStatus[keyof typeof BugUpdateStatus];

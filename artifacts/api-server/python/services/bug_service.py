@@ -43,6 +43,9 @@ class BugService:
             steps_to_reproduce=data.steps_to_reproduce,
             environment=data.environment,
             version=data.version,
+            url=data.url,
+            user_agent=data.user_agent,
+            timestamp=data.timestamp,
             user_id=user_id,
         )
         saved = self._repo.save(bug)

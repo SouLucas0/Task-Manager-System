@@ -21,6 +21,9 @@ class Bug(BaseEntity):
     version: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     issue_number: Mapped[Optional[int]] = mapped_column(Integer, nullable=True, index=True)
     issue_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    url: Mapped[Optional[str]] = mapped_column(String(1000), nullable=True)
+    user_agent: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    timestamp: Mapped[Optional[str]] = mapped_column(String(30), nullable=True)
     user_id: Mapped[Optional[int]] = mapped_column(
         Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=True, index=True
     )

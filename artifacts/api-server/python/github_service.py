@@ -83,6 +83,12 @@ def create_github_issue(bug: dict) -> tuple[bool, str | None]:
     body_parts = []
     body_parts.append(f"**Prioridade:** {label}")
     body_parts.append(f"**Status:** {status_label}")
+    if bug.get("url"):
+        body_parts.append(f"**URL:** {bug['url']}")
+    if bug.get("timestamp"):
+        body_parts.append(f"**Hor\u00e1rio:** {bug['timestamp']}")
+    if bug.get("user_agent"):
+        body_parts.append(f"**Navegador:** {bug['user_agent']}")
     if bug.get("version"):
         body_parts.append(f"**Vers\u00e3o:** v{bug['version']}")
     if bug.get("environment"):

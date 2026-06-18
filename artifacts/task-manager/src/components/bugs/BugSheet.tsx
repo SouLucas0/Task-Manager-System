@@ -188,6 +188,26 @@ export function BugSheet({
                   </a>
                 </div>
               )}
+              {bug.url && (
+                <div className="text-xs text-muted-foreground">
+                  <span className="font-medium text-foreground">URL:</span>{" "}
+                  <a href={bug.url} target="_blank" rel="noopener noreferrer" className="text-primary underline hover:text-primary/80" onClick={(e) => e.stopPropagation()}>
+                    {bug.url.length > 60 ? bug.url.slice(0, 57) + "..." : bug.url}
+                  </a>
+                </div>
+              )}
+              {bug.timestamp && (
+                <div className="text-xs text-muted-foreground">
+                  <span className="font-medium text-foreground">Horário:</span>{" "}
+                  {new Date(bug.timestamp).toLocaleString("pt-BR")}
+                </div>
+              )}
+              {bug.user_agent && (
+                <div className="text-xs text-muted-foreground">
+                  <span className="font-medium text-foreground">Navegador:</span>{" "}
+                  {bug.user_agent.length > 80 ? bug.user_agent.slice(0, 77) + "..." : bug.user_agent}
+                </div>
+              )}
               <div className="flex justify-between items-center text-xs text-muted-foreground">
                 <span>Reportado em {format(new Date(bug.created_at), "dd/MM/yyyy")}</span>
                 <Button

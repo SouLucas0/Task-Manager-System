@@ -26,6 +26,12 @@ export interface Bug {
   /** @nullable */
   issue_url?: string | null;
   /** @nullable */
+  url?: string | null;
+  /** @nullable */
+  user_agent?: string | null;
+  /** @nullable */
+  timestamp?: string | null;
+  /** @nullable */
   user_id?: number | null;
   created_at: string;
   updated_at: string;

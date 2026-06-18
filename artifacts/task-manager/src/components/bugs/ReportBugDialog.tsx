@@ -36,6 +36,12 @@ export function ReportBugDialog({
     e.preventDefault();
     if (!form.title.trim()) return;
 
+    const context = {
+      url: window.location.href,
+      user_agent: navigator.userAgent,
+      timestamp: new Date().toISOString(),
+    };
+
     createBug.mutate(
       {
         data: {
@@ -45,6 +51,9 @@ export function ReportBugDialog({
           steps_to_reproduce: form.steps_to_reproduce || undefined,
           environment: form.environment || undefined,
           version: form.version || undefined,
+          url: context.url,
+          user_agent: context.user_agent,
+          timestamp: context.timestamp,
         },
       },
       {
@@ -137,6 +146,19 @@ export function ReportBugDialog({
               placeholder={"1. Abra a página...\n2. Clique em...\n3. Observe o erro"}
               className="resize-none min-h-[90px] font-mono text-sm"
             />
+          </div>
+
+          <div className="rounded-md bg-muted p-3 space-y-1 text-xs text-muted-foreground">
+            <p className="font-medium text-foreground text-sm">Contexto automático</p>
+            <p>
+              <span className="font-medium">URL:</span> {window.location.pathname}
+            </p>
+            <p>
+              <span className="font-medium">Navegador:</span> {navigator.userAgent.split(" ").slice(-2).join(" ")}
+            </p>
+            <p>
+              <span className="font-medium">Horário:</span> {new Date().toLocaleString("pt-BR")}
+            </p>
           </div>
 
           <DialogFooter>
