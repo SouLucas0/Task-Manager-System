@@ -103,7 +103,7 @@ def create_github_issue(bug: dict) -> tuple[bool, str | None]:
         body_parts.append(bug["steps_to_reproduce"])
         body_parts.append("")
     body_parts.append(f"---")
-    body_parts.append(f"Reportado via TaskFlow em {bug.get('created_at', '')[:10] if bug.get('created_at') else ''}")
+    body_parts.append(f"Reportado via Task Manager em {bug.get('created_at', '')[:10] if bug.get('created_at') else ''}")
 
     payload = json.dumps({
         "title": bug.get("title", "Bug reportado"),

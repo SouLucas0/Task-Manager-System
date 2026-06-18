@@ -1,5 +1,5 @@
 """
-TaskFlow — Python OOP backend
+Task Manager — Python OOP backend
 Implements a task management REST API using:
   - Inheritance    : BaseEntity → Task, Category, User, Bug; BaseRepository → concrete repos
   - Encapsulation  : Services hide repository access; _to_dict() is protected on models
@@ -21,7 +21,7 @@ from routes import health_router, tasks_router, categories_router, auth_router, 
 
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="TaskFlow API", version="1.0.0")
+app = FastAPI(title="Task Manager API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,

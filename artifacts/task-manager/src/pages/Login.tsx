@@ -48,7 +48,7 @@ export default function Login() {
         <div className="flex flex-col items-center gap-2 text-center">
           <div className="flex items-center gap-2">
             <CheckSquare className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold">TaskFlow</span>
+            <span className="text-2xl font-bold">Task Manager</span>
           </div>
           <p className="text-muted-foreground text-sm">Gerencie suas tarefas com eficiência</p>
         </div>

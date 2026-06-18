@@ -120,7 +120,7 @@ def _build_html(bug: dict) -> str:
         <!-- Header -->
         <tr>
           <td style="background:#1f2937;padding:24px 32px;">
-            <span style="color:#ffffff;font-size:20px;font-weight:700;">🐛 TaskFlow — Novo Bug Reportado</span>
+            <span style="color:#ffffff;font-size:20px;font-weight:700;">🐛 Task Manager — Novo Bug Reportado</span>
           </td>
         </tr>
 
@@ -163,7 +163,7 @@ def _build_html(bug: dict) -> str:
         <!-- Footer -->
         <tr>
           <td style="background:#f9fafb;padding:16px 32px;border-top:1px solid #e5e7eb;">
-            <span style="color:#9ca3af;font-size:12px;">Este email foi enviado automaticamente pelo TaskFlow.</span>
+            <span style="color:#9ca3af;font-size:12px;">Este email foi enviado automaticamente pelo Task Manager.</span>
           </td>
         </tr>
 
@@ -186,11 +186,11 @@ def send_bug_report_email(bug: dict) -> bool:
 
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
-    msg["From"] = f"TaskFlow Bugs <{sender}>"
+    msg["From"] = f"Task Manager Bugs <{sender}>"
     msg["To"] = TEAM_EMAIL
 
     plain = (
-        f"Novo bug reportado no TaskFlow\n\n"
+        f"Novo bug reportado no Task Manager\n\n"
         f"ID: #{bug.get('id', '?')}\n"
         f"Título: {bug.get('title', '')}\n"
         f"Prioridade: {PRIORITY_LABELS.get(bug.get('priority','medium'), 'Média')}\n"

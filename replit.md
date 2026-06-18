@@ -1,4 +1,4 @@
-# TaskFlow — Gerenciador de Tarefas
+# Task Manager — Gerenciador de Tarefas
 
 Sistema web de gerenciamento de tarefas implementado com conceitos de POO em Python no backend e React no frontend.
 
