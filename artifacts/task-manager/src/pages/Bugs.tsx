@@ -144,6 +144,11 @@ export default function Bugs() {
                   <span className="text-xs text-muted-foreground">
                     {format(new Date(bug.created_at), "dd/MM/yyyy")}
                   </span>
+                  {bug.issue_url && (
+                    <span className="text-xs text-primary underline cursor-pointer" onClick={(e) => { e.stopPropagation(); window.open(bug.issue_url!, "_blank"); }}>
+                      GitHub #{bug.issue_number}
+                    </span>
+                  )}
                 </div>
               </div>
               <Badge

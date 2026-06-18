@@ -262,6 +262,8 @@ export const ListBugsResponseItem = zod.object({
   "steps_to_reproduce": zod.string().nullish(),
   "environment": zod.string().nullish(),
   "version": zod.string().nullish(),
+  "issue_number": zod.number().nullish(),
+  "issue_url": zod.string().nullish(),
   "user_id": zod.number().nullish(),
   "created_at": zod.string(),
   "updated_at": zod.string()
@@ -303,6 +305,8 @@ export const GetBugResponse = zod.object({
   "steps_to_reproduce": zod.string().nullish(),
   "environment": zod.string().nullish(),
   "version": zod.string().nullish(),
+  "issue_number": zod.number().nullish(),
+  "issue_url": zod.string().nullish(),
   "user_id": zod.number().nullish(),
   "created_at": zod.string(),
   "updated_at": zod.string()
@@ -338,6 +342,8 @@ export const UpdateBugResponse = zod.object({
   "steps_to_reproduce": zod.string().nullish(),
   "environment": zod.string().nullish(),
   "version": zod.string().nullish(),
+  "issue_number": zod.number().nullish(),
+  "issue_url": zod.string().nullish(),
   "user_id": zod.number().nullish(),
   "created_at": zod.string(),
   "updated_at": zod.string()

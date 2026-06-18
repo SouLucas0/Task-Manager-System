@@ -200,6 +200,10 @@ export interface Bug {
   /** @nullable */
   version?: string | null;
   /** @nullable */
+  issue_number?: number | null;
+  /** @nullable */
+  issue_url?: string | null;
+  /** @nullable */
   user_id?: number | null;
   created_at: string;
   updated_at: string;

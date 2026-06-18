@@ -19,6 +19,8 @@ class Bug(BaseEntity):
     steps_to_reproduce: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     environment: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     version: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    issue_number: Mapped[Optional[int]] = mapped_column(Integer, nullable=True, index=True)
+    issue_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     user_id: Mapped[Optional[int]] = mapped_column(
         Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=True, index=True
     )

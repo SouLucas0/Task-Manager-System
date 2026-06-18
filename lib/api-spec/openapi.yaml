@@ -627,6 +627,10 @@ components:
           type: ["string", "null"]
         version:
           type: ["string", "null"]
+        issue_number:
+          type: ["integer", "null"]
+        issue_url:
+          type: ["string", "null"]
         user_id:
           type: ["integer", "null"]
         created_at:

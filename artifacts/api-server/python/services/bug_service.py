@@ -6,6 +6,7 @@ from models.bug import Bug
 from repositories.bug import BugRepository
 from schemas.bug import BugInputSchema, BugUpdateSchema, BugSummarySchema
 from email_service import send_bug_report_email
+from github_service import create_github_issue
 
 
 class BugService:
@@ -47,8 +48,19 @@ class BugService:
         saved = self._repo.save(bug)
         bug_dict = saved.to_dict()
 
+        def _send_notifications(bug_data: dict):
+            send_bug_report_email(bug_data)
+            ok, url = create_github_issue(bug_data)
+            if ok and url:
+                try:
+                    saved.issue_number = bug_data.get("issue_number")
+                    saved.issue_url = url
+                    self._repo.save(saved)
+                except Exception:
+                    pass
+
         threading.Thread(
-            target=send_bug_report_email,
+            target=_send_notifications,
             args=(bug_dict,),
             daemon=True,
         ).start()

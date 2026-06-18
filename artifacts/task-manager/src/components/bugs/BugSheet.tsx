@@ -173,17 +173,33 @@ export function BugSheet({
               />
             </div>
 
-            <div className="pt-4 border-t border-border flex justify-between items-center text-xs text-muted-foreground">
-              <span>Reportado em {format(new Date(bug.created_at), "dd/MM/yyyy")}</span>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleDelete}
-                className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Excluir
-              </Button>
+            <div className="pt-4 border-t border-border space-y-3">
+              {bug.issue_url && (
+                <div className="flex items-center gap-2 text-xs">
+                  <span className="text-muted-foreground">GitHub:</span>
+                  <a
+                    href={bug.issue_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary underline font-medium hover:text-primary/80"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    Issue #{bug.issue_number}
+                  </a>
+                </div>
+              )}
+              <div className="flex justify-between items-center text-xs text-muted-foreground">
+                <span>Reportado em {format(new Date(bug.created_at), "dd/MM/yyyy")}</span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleDelete}
+                  className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Excluir
+                </Button>
+              </div>
             </div>
           </div>
         )}

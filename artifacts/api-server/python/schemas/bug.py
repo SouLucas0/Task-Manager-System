@@ -11,6 +11,8 @@ class BugSchema(BaseModel):
     steps_to_reproduce: Optional[str] = None
     environment: Optional[str] = None
     version: Optional[str] = None
+    issue_number: Optional[int] = None
+    issue_url: Optional[str] = None
     user_id: Optional[int] = None
     created_at: str
     updated_at: str
